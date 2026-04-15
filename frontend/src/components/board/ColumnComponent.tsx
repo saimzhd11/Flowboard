@@ -1,5 +1,5 @@
 'use client'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useDroppable } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -17,7 +17,7 @@ interface Props {
 }
 
 export default function ColumnComponent({ column, boardId, onCardClick, canManage }: Props) {
-  const { addCardLocally, updateColumnLocally, deleteColumnLocally } = useBoard()
+  const {  updateColumnLocally, deleteColumnLocally } = useBoard()
   const [addingCard, setAddingCard] = useState(false)
   const [cardTitle, setCardTitle] = useState('')
   const [editingTitle, setEditingTitle] = useState(false)
@@ -48,8 +48,7 @@ export default function ColumnComponent({ column, boardId, onCardClick, canManag
     if (!cardTitle.trim()) return
     setSaving(true)
     try {
-      const { data } = await api.post(`/cards/${boardId}/${column._id}`, { title: cardTitle.trim() })
-      addCardLocally(data, column._id, [...column.cardOrder.map(c => c._id), data._id])
+      await api.post(`/cards/${boardId}/${column._id}`, { title: cardTitle.trim() })
       setCardTitle('')
       setAddingCard(false)
     } catch { toast.error('Failed to add card') }
@@ -75,7 +74,7 @@ export default function ColumnComponent({ column, boardId, onCardClick, canManag
   }
 
   const cardIds = column.cardOrder.map(c => c._id)
-
+  
   return (
     <div ref={setRef} style={style}
       className={`flex-shrink-0 w-72 flex flex-col rounded-xl border transition-colors duration-150
@@ -117,9 +116,9 @@ export default function ColumnComponent({ column, boardId, onCardClick, canManag
       <div className="flex-1 px-2 pb-2 space-y-2 min-h-[40px] overflow-y-auto max-h-[calc(100vh-240px)]">
         <SortableContext items={cardIds} strategy={verticalListSortingStrategy}>
           {column.cardOrder.map(card => (
-            <CardItem key={card._id} card={card} onClick={() => onCardClick(card)} />
+            <CardItem card={card} onClick={() => onCardClick(card)} />
           ))}
-        </SortableContext>
+        </SortableContext>  
       </div>
 
       {/* Add card */}

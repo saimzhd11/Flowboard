@@ -61,6 +61,7 @@ router.put('/:boardId', loadBoard, requireRole('owner', 'admin'), async (req, re
     if (description !== undefined) board.description = description.trim()
     if (color) board.color = color
     await board.save()
+    await board.populate('members.user', 'name email avatar')
     const io = req.app.get('io')
     io.to(`board:${board._id}`).emit('board:updated', board)
     res.json(board)
@@ -83,6 +84,7 @@ router.delete('/:boardId', loadBoard, requireRole('owner'), async (req, res) => 
 // POST /api/boards/:boardId/members — invite by email (admin/owner)
 router.post('/:boardId/members', loadBoard, requireRole('owner', 'admin'), async (req, res) => {
   try {
+    console.log('invite member request body:', req.body)
     const { email, role = 'member' } = req.body
     const user = await User.findOne({ email: email?.toLowerCase() })
     if (!user) return res.status(404).json({ message: 'No user found with that email' })

@@ -15,12 +15,14 @@ const boardSchema = new mongoose.Schema({
 
 // Helper: get role of a user on this board
 boardSchema.methods.getUserRole = function (userId) {
-  const member = this.members.find(m => m.user.toString() === userId.toString())
+  const member = this.members.find(
+    m => String(m.user?._id || m.user) === String(userId)
+  )
   return member ? member.role : null
 }
 
 boardSchema.methods.isMember = function (userId) {
-  return this.members.some(m => m.user.toString() === userId.toString())
+  return this.members.some(m => String(m.user?._id || m.user) === String(userId))
 }
 
 module.exports = mongoose.model('Board', boardSchema)

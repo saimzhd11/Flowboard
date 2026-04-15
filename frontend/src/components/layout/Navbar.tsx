@@ -4,7 +4,7 @@ import { useAuth } from '@/context/AuthContext'
 
 export default function Navbar() {
   const { user, logout } = useAuth()
-  const initials = user?.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) ?? '?'
+  const initials = user?.name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) ?? '?'
 
   return (
     <header className="h-12 bg-dark-200 border-b border-white/[0.06] flex items-center px-4 gap-4 sticky top-0 z-20">

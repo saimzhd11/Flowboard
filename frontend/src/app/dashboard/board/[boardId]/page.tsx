@@ -10,7 +10,6 @@ import { useAuth } from '@/context/AuthContext'
 import { BoardProvider, useBoard } from '@/context/BoardContext'
 import api from '@/lib/api'
 import toast from 'react-hot-toast'
-import Navbar from '@/components/layout/Navbar'
 import BoardHeader from '@/components/board/BoardHeader'
 import ColumnComponent from '@/components/board/ColumnComponent'
 import MembersPanel from '@/components/board/MembersPanel'
@@ -173,7 +172,6 @@ function BoardView() {
 
   return (
     <div className="min-h-screen bg-dark-300 flex flex-col">
-      <Navbar />
       <BoardHeader
         board={board}
         onOpenMembers={() => setShowMembers(true)}

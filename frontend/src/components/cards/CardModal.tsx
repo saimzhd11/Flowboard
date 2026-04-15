@@ -87,7 +87,6 @@ export default function CardModal({ card: initialCard, boardId, onClose }: Props
   const addLabel = async () => {
     if (!newLabel.trim() || card.labels.includes(newLabel.trim())) return
     await patch({ labels: [...card.labels, newLabel.trim()] })
-    setCard(p => ({ ...p, labels: [...p.labels, newLabel.trim()] }))
     setNewLabel('')
     setAddingLabel(false)
   }

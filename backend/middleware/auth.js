@@ -23,6 +23,8 @@ const requireRole = (...roles) => async (req, res, next) => {
   if (!board) return res.status(500).json({ message: 'Board not loaded' })
   const role = board.getUserRole(req.user._id)
   if (!role || !roles.includes(role)) {
+  console.log('Checking role:', role)
+
     return res.status(403).json({ message: 'Insufficient permissions' })
   }
   next()

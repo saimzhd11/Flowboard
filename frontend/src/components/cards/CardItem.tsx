@@ -27,6 +27,7 @@ export default function CardItem({ card, onClick }: Props) {
   return (
     <div
       ref={setNodeRef}
+      key={card._id}
       style={style}
       {...attributes}
       {...listeners}

@@ -19,15 +19,15 @@ router.post('/:boardId/:columnId', loadBoard, async (req, res) => {
       dueDate: dueDate || null,
       labels: labels || []
     })
-    await card.populate('assignees', 'name email avatar')
+    const populatedCard = await Card.findById(card._id).populate('assignees', 'name email avatar')
     const column = await Column.findById(req.params.columnId)
     column.cardOrder.push(card._id)
     await column.save()
     const io = req.app.get('io')
     io.to(`board:${req.params.boardId}`).emit('card:created', {
-      card, columnId: req.params.columnId, cardOrder: column.cardOrder
+      card: populatedCard, columnId: req.params.columnId, cardOrder: column.cardOrder
     })
-    res.status(201).json(card)
+    res.status(201).json(populatedCard)
   } catch (err) { res.status(500).json({ message: err.message }) }
 })
 
@@ -71,12 +71,13 @@ router.put('/:boardId/:cardId', loadBoard, async (req, res) => {
     if (coverColor !== undefined) card.coverColor = coverColor
 
     await card.save()
-    await card.populate('assignees', 'name email avatar')
-    await card.populate('comments.author', 'name email avatar')
+    const updatedCard = await Card.findById(card._id)
+      .populate('assignees', 'name email avatar')
+      .populate('comments.author', 'name email avatar')
 
     const io = req.app.get('io')
-    io.to(`board:${req.params.boardId}`).emit('card:updated', { card })
-    res.json(card)
+    io.to(`board:${req.params.boardId}`).emit('card:updated', { card: updatedCard })
+    res.json(updatedCard)
   } catch (err) { res.status(500).json({ message: err.message }) }
 })
 
@@ -105,8 +106,9 @@ router.post('/:boardId/:cardId/comments', loadBoard, async (req, res) => {
     if (!card) return res.status(404).json({ message: 'Card not found' })
     card.comments.push({ author: req.user._id, text: text.trim() })
     await card.save()
-    await card.populate('comments.author', 'name email avatar')
-    const newComment = card.comments[card.comments.length - 1]
+    const updatedCard = await Card.findById(card._id)
+      .populate('comments.author', 'name email avatar')
+    const newComment = updatedCard.comments[updatedCard.comments.length - 1]
     const io = req.app.get('io')
     io.to(`board:${req.params.boardId}`).emit('card:commentAdded', {
       cardId: card._id, comment: newComment

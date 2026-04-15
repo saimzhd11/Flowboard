@@ -14,7 +14,6 @@ interface BoardContextType {
   addColumnLocally: (col: Column, order: string[]) => void
   deleteColumnLocally: (colId: string, order: string[]) => void
   updateColumnLocally: (col: Column) => void
-  addCardLocally: (card: Card, colId: string, order: string[]) => void
   deleteCardLocally: (cardId: string, colId: string) => void
   setColumnOrder: (order: string[]) => void
   setCardOrderInColumn: (colId: string, order: string[]) => void
@@ -145,15 +144,7 @@ export function BoardProvider({ children, boardId }: { children: ReactNode; boar
       columnOrder: prev.columnOrder.map(c => c._id === col._id ? { ...c, title: col.title } : c)
     } : prev)
 
-  const addCardLocally = (card: Card, colId: string, order: string[]) =>
-    setBoard(prev => {
-      if (!prev) return prev
-      return { ...prev, columnOrder: prev.columnOrder.map(col => {
-        if (col._id !== colId) return col
-        const cards = [...col.cardOrder, card]
-        return { ...col, cardOrder: cards.sort((a, b) => order.indexOf(a._id) - order.indexOf(b._id)) }
-      })}
-    })
+  
 
   const deleteCardLocally = (cardId: string, colId: string) =>
     setBoard(prev => prev ? { ...prev, columnOrder: prev.columnOrder.map(col =>
@@ -178,7 +169,7 @@ export function BoardProvider({ children, boardId }: { children: ReactNode; boar
     <BoardContext.Provider value={{
       board, loading, error, fetchBoard,
       updateCardLocally, addColumnLocally, deleteColumnLocally,
-      updateColumnLocally, addCardLocally, deleteCardLocally,
+      updateColumnLocally, deleteCardLocally,
       setColumnOrder, setCardOrderInColumn
     }}>
       {children}
