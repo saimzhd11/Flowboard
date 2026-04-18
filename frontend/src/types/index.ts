@@ -76,3 +76,11 @@ export interface DragItem {
   id: string
   columnId?: string
 }
+
+
+// board
+export type CreateBoardForm = {
+  title: string
+  description: string
+  color: string
+}
