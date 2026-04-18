@@ -159,14 +159,10 @@ export function BoardProvider({ children, boardId }: { children: ReactNode; boar
   const setCardOrderInColumn = (colId: string, order: string[]) =>
     setBoard(prev => {
       if (!prev) return prev
-      // build a global map of cards so cross-column moves can resolve card objects
-      const cardMap: Record<string, any> = {}
-      prev.columnOrder.forEach((c: any) => { (c.cardOrder || []).forEach((card: any) => { if (card && card._id) cardMap[card._id] = card }) })
       return { ...prev, columnOrder: prev.columnOrder.map(col => {
         if (col._id !== colId) return col
-        const sorted = order.map(id => cardMap[id]).filter(Boolean)
-        return { ...col, cardOrder: sorted }
-      }) }
+        return { ...col, cardOrder: [...col.cardOrder].sort((a, b) => order.indexOf(a._id) - order.indexOf(b._id)) }
+      })}
     })
 
   return (

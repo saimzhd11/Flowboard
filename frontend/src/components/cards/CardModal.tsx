@@ -8,6 +8,9 @@ import PriorityBadge from '@/components/ui/PriorityBadge'
 import Avatar from '@/components/ui/Avatar'
 import type { Card, Priority } from '@/types'
 
+// Patch payload that allows sending assignee id arrays (string[])
+type UpdateCardPayload = Partial<Omit<Card, 'assignees'>> & { assignees?: string[] | Card['assignees'] }
+
 const PRIORITIES: Priority[] = ['low', 'medium', 'high', 'urgent']
 const COVER_COLORS = ['#6366f1','#8b5cf6','#ec4899','#f59e0b','#10b981','#3b82f6','#ef4444','']
 
@@ -30,7 +33,7 @@ export default function CardModal({ card: initialCard, boardId, onClose }: Props
   const [addingLabel, setAddingLabel] = useState(false)
   const [newLabel, setNewLabel] = useState('')
 
-  const patch = async (data: Partial<Card>) => {
+  const patch = async (data: UpdateCardPayload) => {
     try {
       const { data: updated } = await api.put<Card>(`/cards/${boardId}/${card._id}`, data)
       setCard(updated)
