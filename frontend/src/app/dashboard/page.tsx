@@ -87,11 +87,11 @@ export default function DashboardPage() {
                 <div className="flex -space-x-1.5">
                   {board.members.slice(0, 4).map(member => (
                     <div
-                      key={member.user._id}
+                      key={member?.user?._id}
                       className="w-6 h-6 rounded-full bg-dark-200 border border-dark-300 flex items-center justify-center text-xs text-slate-300 font-medium"
-                      title={member.user.name}
+                      title={member?.user?.name}
                     >
-                      {member.user.name[0].toUpperCase()}
+                      {member?.user?.name[0].toUpperCase()}
                     </div>
                   ))}
                   {board.members.length > 4 && (

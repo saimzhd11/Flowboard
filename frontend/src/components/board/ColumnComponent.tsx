@@ -65,7 +65,6 @@ export default function ColumnComponent({ column, boardId, onCardClick, canManag
   }
 
   const deleteColumn = async () => {
-    if (!confirm(`Delete "${column.title}" and all its cards?`)) return
     try {
       await api.delete(`/columns/${boardId}/${column._id}`)
       deleteColumnLocally(column._id, [])
@@ -73,7 +72,7 @@ export default function ColumnComponent({ column, boardId, onCardClick, canManag
     } catch { toast.error('Failed to delete column') }
   }
 
-  const cardIds = column.cardOrder.map(c => c._id)
+  const cardIds = column?.cardOrder?.map(c => c._id) ?? []
   
   return (
     <div ref={setRef} style={style}
@@ -100,7 +99,7 @@ export default function ColumnComponent({ column, boardId, onCardClick, canManag
           </button>
         )}
 
-        <span className="text-xs text-slate-600 flex-shrink-0">{column.cardOrder.length}</span>
+        <span className="text-xs text-slate-600 flex-shrink-0">{column?.cardOrder?.length}</span>
 
         {canManage && (
           <button onClick={deleteColumn}
@@ -115,7 +114,7 @@ export default function ColumnComponent({ column, boardId, onCardClick, canManag
       {/* Cards */}
       <div className="flex-1 px-2 pb-2 space-y-2 min-h-[40px] overflow-y-auto max-h-[calc(100vh-240px)]">
         <SortableContext items={cardIds} strategy={verticalListSortingStrategy}>
-          {column.cardOrder.map(card => (
+          {column?.cardOrder?.map(card => (
             <CardItem card={card} onClick={() => onCardClick(card)} />
           ))}
         </SortableContext>  

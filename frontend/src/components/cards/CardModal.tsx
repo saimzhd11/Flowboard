@@ -256,17 +256,17 @@ export default function CardModal({ card: initialCard, boardId, onClose }: Props
                 <p className="text-xs font-medium text-slate-500 mb-2">Assignees</p>
                 <div className="space-y-1.5">
                   {board?.members.map(m => {
-                    const isAssigned = card.assignees.some(a => a._id === m.user._id)
+                    const isAssigned = card.assignees.some(a => a._id === m?.user?._id)
                     return (
-                      <button key={m.user._id}
+                      <button key={m?.user?._id}
                         onClick={() => patch({
                           assignees: isAssigned
-                            ? card.assignees.filter(a => a._id !== m.user._id).map(a => a._id)
-                            : [...card.assignees.map(a => a._id), m.user._id]
+                            ? card.assignees.filter(a => a._id !== m?.user?._id).map(a => a._id)
+                            : [...card.assignees.map(a => a._id), m?.user?._id]
                         })}
                         className={`w-full flex items-center gap-2 px-2 py-1 rounded text-xs transition-all ${isAssigned ? 'bg-brand-500/15' : 'hover:bg-white/5'}`}>
-                        <Avatar user={m.user} />
-                        <span className={isAssigned ? 'text-brand-300' : 'text-slate-400'}>{m.user.name}</span>
+                        <Avatar user={m?.user} />
+                        <span className={isAssigned ? 'text-brand-300' : 'text-slate-400'}>{m?.user?.name}</span>
                         {isAssigned && <svg className="w-3 h-3 text-brand-400 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>}
                       </button>
                     )

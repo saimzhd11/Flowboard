@@ -9,6 +9,7 @@ import MembersPanel from '@/components/board/MembersPanel'
 import CardModal from '@/components/cards/CardModal'
 import type { Card } from '@/types'
 import toast from 'react-hot-toast'
+import api from '@/lib/api'
 import AddColumnInline from '@/components/board/AddColumnInline'
 import BoardCanvas from '@/components/board/BoardCanvas'
 import BoardLoadingScreen from '@/components/board/BoardLoadingScreen'
@@ -44,6 +45,16 @@ function BoardView({ boardId }: BoardViewProps) {
   const closeAddColumn = () => setIsAddColumnOpen(false)
   const closeSelectedCard = () => setSelectedCard(null)
 
+  const handleDelete = async () => {
+    try {
+      await api.delete(`/boards/${boardId}`)
+      toast.success('Board deleted')
+      router.replace('/dashboard')
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to delete board')
+    }
+  }
+
   const canManage = canManageBoard(board, user?._id)
 
   const {
@@ -74,6 +85,7 @@ function BoardView({ boardId }: BoardViewProps) {
         board={board}
         onOpenMembers={openMembersPanel}
         onAddColumn={openAddColumn}
+        onDelete={canManage ? handleDelete : undefined}
       />
 
       <BoardCanvas

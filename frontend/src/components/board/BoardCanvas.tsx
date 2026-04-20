@@ -49,7 +49,8 @@ export default function BoardCanvas({
   onDragEnd,
   children
 }: BoardCanvasProps) {
-  const columnIds = board.columnOrder.map(column => column._id)
+  const columns = board?.columnOrder ?? []
+  const columnIds = columns.map(column => column._id)
 
   return (
     <div className="flex-1 overflow-x-auto overflow-y-hidden">
@@ -61,7 +62,7 @@ export default function BoardCanvas({
           onDragEnd={onDragEnd}
         >
           <SortableContext items={columnIds} strategy={horizontalListSortingStrategy}>
-            {board.columnOrder.map(column => (
+            {columns.map(column => (
               <ColumnComponent
                 key={column._id}
                 column={column}

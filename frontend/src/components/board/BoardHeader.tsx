@@ -9,12 +9,13 @@ interface Props {
   board: Board
   onOpenMembers: () => void
   onAddColumn: () => void
+  onDelete?: () => void
 }
 
-export default function BoardHeader({ board, onOpenMembers, onAddColumn }: Props) {
+export default function BoardHeader({ board, onOpenMembers, onAddColumn, onDelete }: Props) {
   const { user } = useAuth()
   const myRole = board.members.find(m => m.user._id === user?._id)?.role
-  const canManage = myRole === 'owner' || myRole === 'admin'
+  const canManage = myRole === 'owner'
   const visibleMembers = board.members.slice(0, 5)
   const overflow = board.members.length - 5
 
@@ -47,7 +48,7 @@ export default function BoardHeader({ board, onOpenMembers, onAddColumn }: Props
       <button onClick={onOpenMembers}
         className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-white/5 transition-colors group">
         <div className="flex -space-x-1.5">
-          {visibleMembers.map(m => <Avatar key={m.user._id} user={m.user} />)}
+          {visibleMembers.map(m => <Avatar key={m?.user?._id} user={m?.user} />)}
           {overflow > 0 && (
             <div className="w-6 h-6 rounded-full bg-dark-100 border border-dark-300 flex items-center justify-center text-xs text-slate-500">
               +{overflow}
@@ -60,6 +61,16 @@ export default function BoardHeader({ board, onOpenMembers, onAddColumn }: Props
           </span>
         )}
       </button>
+
+      {/* Delete board (owner) */}
+      {canManage && (
+        <button onClick={onDelete} className="btn-danger flex items-center gap-1.5 text-xs py-1.5 px-3 mr-2">
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M10 3h4l1 2H9l1-2z" />
+          </svg>
+          <span className="hidden sm:inline">Delete board</span>
+        </button>
+      )}
 
       {/* Add column */}
       <button onClick={onAddColumn} className="btn-primary flex items-center gap-1.5 text-xs py-1.5 px-3">
