@@ -23,7 +23,7 @@ type BoardViewProps = {
 function BoardView({ boardId }: BoardViewProps) {
   const { user } = useAuth()
   const router = useRouter()
-  const { board, loading: isBoardLoading, error, fetchBoard, setColumnOrder, setCardOrderInColumn } = useBoard()
+  const { board, loading: isBoardLoading, error, fetchBoard, setColumnOrder, setCardOrderInColumn,moveCardBetweenColumnsLocally } = useBoard()
 
   const [selectedCard, setSelectedCard] = useState<Card | null>(null)
   const [isMembersPanelOpen, setIsMembersPanelOpen] = useState(false)
@@ -70,7 +70,8 @@ function BoardView({ boardId }: BoardViewProps) {
     boardId,
     fetchBoard,
     setColumnOrder,
-    setCardOrderInColumn
+    setCardOrderInColumn,
+    moveCardBetweenColumnsLocally
   })
 
   if (isBoardLoading) {

@@ -29,7 +29,9 @@ export default function ColumnComponent({ column, boardId, onCardClick, canManag
     id: column._id,
     data: { type: 'COLUMN' }
   })
-
+//  useEffect(() => {
+//     console.log('column:', column?.title,' Card Order:',column?.cardOrder)
+//   }, [column])
   const { setNodeRef: setDropRef, isOver } = useDroppable({ id: column._id })
 
   const style = {

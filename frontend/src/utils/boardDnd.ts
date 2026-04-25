@@ -1,5 +1,5 @@
 import { arrayMove } from '@dnd-kit/sortable'
-import type { DragOverEvent, Over } from '@dnd-kit/core'
+import type { Over } from '@dnd-kit/core'
 import type { Column } from '@/types'
 
 type GetOverColumnIdParams = {
@@ -12,6 +12,8 @@ type MoveCardAcrossColumnsParams = {
   activeCardId: string
   activeColumnId: string
   overColumnId: string
+  overId?: string
+  overType?: string
 }
 
 type GetSameColumnCardOrderParams = {
@@ -29,19 +31,29 @@ export function getOverColumnId({
   over,
   findCardColumn
 }: GetOverColumnIdParams) {
-  return over.data.current?.type === 'CARD'
-    ? findCardColumn(over.id as string)?._id
-    : over.id as string
+  const overType = over.data.current?.type
+
+  if (overType === 'CARD') {
+    return findCardColumn(String(over.id))?._id
+  }
+
+  return (
+    over.data.current?.columnId ??
+    (typeof over.id === 'string' ? over.id : String(over.id))
+  )
 }
 
 export function moveCardAcrossColumns({
   columns,
   activeCardId,
   activeColumnId,
-  overColumnId
+  overColumnId,
+  overId,
+  overType
 }: MoveCardAcrossColumnsParams) {
   const activeColumn = columns.find(column => column._id === activeColumnId)
   const overColumn = columns.find(column => column._id === overColumnId)
+  console.log('moveCardAcrossColumns activeColumn:',activeColumn,'\noverColumn:',overColumn)
 
   if (!activeColumn || !overColumn) return null
 
@@ -52,7 +64,22 @@ export function moveCardAcrossColumns({
     .filter(card => card._id !== activeCardId)
     .map(card => card._id)
 
-  const overColumnCardOrder = [...overColumn.cardOrder, movingCard].map(card => card._id)
+  const overCardIds = overColumn.cardOrder
+    .map(card => card._id)
+    .filter(cardId => cardId !== activeCardId)
+
+  let insertIndex = overCardIds.length
+
+  if (overType === 'CARD' && overId) {
+    const hoveredCardIndex = overCardIds.findIndex(cardId => cardId === overId)
+    insertIndex = hoveredCardIndex === -1 ? overCardIds.length : hoveredCardIndex
+  }
+
+  const overColumnCardOrder = [
+    ...overCardIds.slice(0, insertIndex),
+    movingCard._id,
+    ...overCardIds.slice(insertIndex)
+  ]
 
   return {
     activeColumnCardOrder,
@@ -67,16 +94,22 @@ export function getSameColumnCardOrder({
   overType
 }: GetSameColumnCardOrderParams) {
   const oldIndex = column.cardOrder.findIndex(card => card._id === activeCardId)
-  const newIndex = overType === 'CARD'
-    ? column.cardOrder.findIndex(card => card._id === overId)
-    : column.cardOrder.length - 1
+
+  const newIndex =
+    overType === 'CARD'
+      ? column.cardOrder.findIndex(card => card._id === overId)
+      : column.cardOrder.length - 1
 
   if (oldIndex === -1 || newIndex === -1 || oldIndex === newIndex) return null
 
   return arrayMove(column.cardOrder, oldIndex, newIndex).map(card => card._id)
 }
 
-export function getColumnOrderAfterMove(columns: Column[], activeId: string, overId: string) {
+export function getColumnOrderAfterMove(
+  columns: Column[],
+  activeId: string,
+  overId: string
+) {
   const oldIndex = columns.findIndex(column => column._id === activeId)
   const newIndex = columns.findIndex(column => column._id === overId)
 

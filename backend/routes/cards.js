@@ -31,6 +31,83 @@ router.post('/:boardId/:columnId', loadBoard, async (req, res) => {
   } catch (err) { res.status(500).json({ message: err.message }) }
 })
 
+// PUT /api/cards/:boardId/:cardId/move
+router.put('/:boardId/:cardId/move', loadBoard, async (req, res) => {
+  try {
+    const {
+      sourceColumnId,
+      destinationColumnId,
+      sourceOrder,
+      destinationOrder
+    } = req.body
+
+    const { boardId, cardId } = req.params
+
+    if (!sourceColumnId || !destinationColumnId) {
+      return res.status(400).json({ message: 'Source and destination columns required' })
+    }
+
+    if (!Array.isArray(sourceOrder) || !Array.isArray(destinationOrder)) {
+      return res.status(400).json({ message: 'Source and destination order required' })
+    }
+
+    const card = await Card.findOne({ _id: cardId, board: boardId })
+
+    if (!card) {
+      return res.status(404).json({ message: 'Card not found' })
+    }
+
+    const sourceColumn = await Column.findOne({
+      _id: sourceColumnId,
+      board: boardId
+    })
+
+    const destinationColumn = await Column.findOne({
+      _id: destinationColumnId,
+      board: boardId
+    })
+
+    if (!sourceColumn || !destinationColumn) {
+      return res.status(404).json({ message: 'Column not found' })
+    }
+
+    card.column = destinationColumnId
+    sourceColumn.cardOrder = sourceOrder
+    destinationColumn.cardOrder = destinationOrder
+
+    await Promise.all([
+      card.save(),
+      sourceColumn.save(),
+      destinationColumn.save()
+    ])
+
+    const updatedCard = await Card.findById(card._id)
+      .populate('assignees', 'name email avatar')
+      .populate('comments.author', 'name email avatar')
+
+    const io = req.app.get('io')
+
+    io.to(`board:${boardId}`).emit('card:moved', {
+      card: updatedCard,
+      sourceColumnId,
+      destinationColumnId,
+      sourceOrder,
+      destinationOrder
+    })
+
+    res.json({
+      card: updatedCard,
+      sourceColumnId,
+      destinationColumnId,
+      sourceOrder,
+      destinationOrder
+    })
+  } catch (err) {
+    console.log('Move card error:', err)
+    res.status(500).json({ message: err.message })
+  }
+})
+
 // GET /api/cards/:boardId/:cardId — single card detail
 router.get('/:boardId/:cardId', loadBoard, async (req, res) => {
   try {
@@ -45,22 +122,11 @@ router.get('/:boardId/:cardId', loadBoard, async (req, res) => {
 // PUT /api/cards/:boardId/:cardId — update card
 router.put('/:boardId/:cardId', loadBoard, async (req, res) => {
   try {
-    const { title, description, priority, dueDate, labels, assignees, coverColor, column } = req.body
+    const { title, description, priority, dueDate, labels, assignees, coverColor } = req.body
     const card = await Card.findOne({ _id: req.params.cardId, board: req.params.boardId })
     if (!card) return res.status(404).json({ message: 'Card not found' })
 
-    // Handle column move
-    if (column && column !== card.column.toString()) {
-      const oldColumn = await Column.findById(card.column)
-      const newColumn = await Column.findById(column)
-      if (oldColumn && newColumn) {
-        oldColumn.cardOrder = oldColumn.cardOrder.filter(id => id.toString() !== card._id.toString())
-        newColumn.cardOrder.push(card._id)
-        await oldColumn.save()
-        await newColumn.save()
-        card.column = column
-      }
-    }
+    
 
     if (title !== undefined) card.title = title.trim()
     if (description !== undefined) card.description = description
@@ -76,9 +142,15 @@ router.put('/:boardId/:cardId', loadBoard, async (req, res) => {
       .populate('comments.author', 'name email avatar')
 
     const io = req.app.get('io')
+
     io.to(`board:${req.params.boardId}`).emit('card:updated', { card: updatedCard })
+          console.log('backend here ')
+
     res.json(updatedCard)
-  } catch (err) { res.status(500).json({ message: err.message }) }
+  } catch (err) {
+    console.log('error is:', err)
+    res.status(500).json({ message: err.message })
+  }
 })
 
 // DELETE /api/cards/:boardId/:cardId

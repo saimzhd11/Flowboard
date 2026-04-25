@@ -78,7 +78,6 @@ export default function CardModal({ card: initialCard, boardId, onClose }: Props
   }
 
   const deleteCard = async () => {
-    if (!confirm('Delete this card?')) return
     try {
       await api.delete(`/cards/${boardId}/${card._id}`)
       deleteCardLocally(card._id, card.column)
