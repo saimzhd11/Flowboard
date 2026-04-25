@@ -6,6 +6,7 @@ import { Toaster } from 'react-hot-toast'
 export const metadata: Metadata = {
   title: 'FlowBoard — Collaborative Project Management',
   description: 'Real-time collaborative kanban board with drag-and-drop and role-based permissions',
+   
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

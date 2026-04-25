@@ -32,7 +32,7 @@ export default function CardItem({ card, onClick }: Props) {
       {...attributes}
       {...listeners}
       onClick={onClick}
-      className="group bg-dark-200 border border-white/[0.06] rounded-lg p-3 cursor-pointer
+      className="group bg-dark-200 border border-white/[0.15] rounded-lg p-3 cursor-pointer
                  hover:border-white/20 hover:bg-dark-100 transition-all duration-150 select-none"
     >
       {card.coverColor && (

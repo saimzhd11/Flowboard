@@ -79,7 +79,7 @@ export default function ColumnComponent({ column, boardId, onCardClick, canManag
   return (
     <div ref={setRef} style={style}
       className={`flex-shrink-0 w-72 flex flex-col rounded-xl border transition-colors duration-150
-        ${isOver ? 'border-brand-500/40 bg-dark-100/80' : 'border-white/[0.06] bg-dark-200'}`}>
+        ${isOver ? 'border-brand-500/40 bg-dark-100/80' : 'border-white/[0.06] bg-dark-100'}`}>
 
       {/* Column header */}
       <div className="flex items-center gap-2 px-3 pt-3 pb-2">

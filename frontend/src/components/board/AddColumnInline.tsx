@@ -56,7 +56,7 @@ export default function AddColumnInline({
     return (
       <form
         onSubmit={handleSubmit}
-        className="flex-shrink-0 w-72 bg-dark-200 border border-white/[0.06] rounded-xl p-3 space-y-2"
+        className="flex-shrink-0 w-72 bg-dark-100 border border-white/[0.06] rounded-xl p-3 space-y-2"
       >
         <input
           value={columnTitle}

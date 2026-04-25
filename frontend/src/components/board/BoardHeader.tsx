@@ -20,7 +20,7 @@ export default function BoardHeader({ board, onOpenMembers, onAddColumn, onDelet
   const overflow = board.members.length - 5
 
   return (
-    <div className="h-12 bg-dark-200/80 backdrop-blur border-b border-white/[0.06] flex items-center gap-3 px-4 flex-shrink-0">
+    <div className="h-12 bg-dark-100/80 backdrop-blur border-b border-white/[0.06] flex items-center gap-3 px-4 flex-shrink-0">
       {/* Breadcrumb */}
       <Link href="/dashboard" className="text-slate-500 hover:text-slate-300 transition-colors">
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
